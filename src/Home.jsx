@@ -1,11 +1,9 @@
 import Button from "./Button";
 
-function Home() {
+export default function Home() {
     return (
         <>
             <Button />
         </>
     );
 }
-
-export default Home;

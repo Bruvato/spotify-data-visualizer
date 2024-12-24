@@ -1,6 +1,6 @@
 import { redirectToAuthCodeFlow } from "./utils/authUtils";
 
-function Button() {
+export default function Button() {
     const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 
     const handleClick = () => {
@@ -16,5 +16,3 @@ function Button() {
         </button>
     );
 }
-
-export default Button;

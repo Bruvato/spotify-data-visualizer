@@ -1,6 +1,3 @@
-
-
-
 export async function redirectToAuthCodeFlow(clientId) {
     const verifier = generateCodeVerifier(128);
     const challenge = await generateCodeChallenge(verifier);
@@ -11,7 +8,7 @@ export async function redirectToAuthCodeFlow(clientId) {
     params.append("client_id", clientId);
     params.append("response_type", "code");
     params.append("redirect_uri", "http://localhost:5173/callback");
-    params.append("scope", "user-read-private user-read-email");
+    params.append("scope", "user-read-private user-read-email user-top-read");
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
 
@@ -38,23 +35,28 @@ export async function generateCodeChallenge(codeVerifier) {
         .replace(/=+$/, "");
 }
 
-export async function getAccessToken(clientId, code) {
+export async function getAccessToken(clientId, authorizationCode) {
+    if (localStorage.getItem("acess_token")){
+        return localStorage.getItem("acess_token")
+    }
+
     const verifier = localStorage.getItem("verifier");
 
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
-    params.append("code", code);
+    params.append("code", authorizationCode);
     params.append("redirect_uri", "http://localhost:5173/callback");
     params.append("code_verifier", verifier);
 
-    const result = await fetch("https://accounts.spotify.com/api/token", {
+    const response = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params,
     });
 
-    const { access_token } = await result.json();
+    const { access_token } = await response.json();
+
+    localStorage.setItem("acess_token", access_token);
     return access_token;
 }
-

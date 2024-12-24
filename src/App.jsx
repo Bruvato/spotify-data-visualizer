@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import Callback from "./Callback";
 
-function App() {
+export default function App() {
     return (
         <div>
             <Router>
@@ -15,5 +15,3 @@ function App() {
         </div>
     );
 }
-
-export default App;
