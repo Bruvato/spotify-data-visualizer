@@ -3,8 +3,6 @@ import { getAccessToken } from "./utils/authUtils";
 import { fetchProfile, fetchTopArtists, fetchTopTracks } from "./utils/api";
 
 export default function Callback() {
-    // TODO: local storage
-
     const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
     const [profile, setProfile] = useState(null);
     const [artists, setArtists] = useState(null);
@@ -23,7 +21,7 @@ export default function Callback() {
 
         if (code) {
             (async () => {
-                const accessToken = await getAccessToken(clientId, code);
+                const accessToken = await getAccessToken(code);
 
                 const userProfile = await fetchProfile(accessToken);
                 setProfile(userProfile);
@@ -32,7 +30,7 @@ export default function Callback() {
                 setArtists(topArtists.items);
 
                 const topTracks = await fetchTopTracks(accessToken);
-                setTracks(topTracks.items)
+                setTracks(topTracks.items);
 
                 setIsPending(false);
             })();
@@ -60,9 +58,9 @@ export default function Callback() {
                     {artist.name + ": " + artist.popularity}
                 </div>
             ))}
-            {artists.map((artist) => (
-                <div className="" key={artist.id}>
-                    {artist.name + ": " + artist.popularity}
+            {tracks.map((track) => (
+                <div className="" key={track.id}>
+                    {track.name + ": " + track.popularity}
                 </div>
             ))}
         </>

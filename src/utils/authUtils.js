@@ -1,16 +1,19 @@
-export async function redirectToAuthCodeFlow(clientId) {
+const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+
+export async function redirectToAuthCodeFlow() {
     const verifier = generateCodeVerifier(128);
     const challenge = await generateCodeChallenge(verifier);
 
     localStorage.setItem("verifier", verifier);
 
-    const params = new URLSearchParams();
-    params.append("client_id", clientId);
-    params.append("response_type", "code");
-    params.append("redirect_uri", "http://localhost:5173/callback");
-    params.append("scope", "user-read-private user-read-email user-top-read");
-    params.append("code_challenge_method", "S256");
-    params.append("code_challenge", challenge);
+    const params = new URLSearchParams({
+        client_id: CLIENT_ID,
+        response_type: "code",
+        redirect_uri: "http://localhost:5173/callback",
+        scope: "user-read-private user-read-email user-top-read",
+        code_challenge_method: "S256",
+        code_challenge: challenge,
+    });
 
     document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
@@ -35,19 +38,22 @@ export async function generateCodeChallenge(codeVerifier) {
         .replace(/=+$/, "");
 }
 
-export async function getAccessToken(clientId, authorizationCode) {
-    if (localStorage.getItem("acess_token")){
-        return localStorage.getItem("acess_token")
+export async function getAccessToken(authorizationCode) {
+    const access_token = localStorage.getItem("access_token");
+    if (access_token !== null && access_token !== "undefined") {
+        getRefreshToken();
+        return localStorage.getItem("access_token");
     }
 
     const verifier = localStorage.getItem("verifier");
 
-    const params = new URLSearchParams();
-    params.append("client_id", clientId);
-    params.append("grant_type", "authorization_code");
-    params.append("code", authorizationCode);
-    params.append("redirect_uri", "http://localhost:5173/callback");
-    params.append("code_verifier", verifier);
+    const params = new URLSearchParams({
+        client_id: CLIENT_ID,
+        grant_type: "authorization_code",
+        code: authorizationCode,
+        redirect_uri: "http://localhost:5173/callback",
+        code_verifier: verifier,
+    });
 
     const response = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
@@ -55,8 +61,35 @@ export async function getAccessToken(clientId, authorizationCode) {
         body: params,
     });
 
-    const { access_token } = await response.json();
+    const responseBody = await response.json();
 
-    localStorage.setItem("acess_token", access_token);
-    return access_token;
+    localStorage.setItem("access_token", responseBody.access_token);
+    localStorage.setItem("refresh_token", responseBody.refresh_token);
+
+    return responseBody.access_token;
+}
+
+export async function getRefreshToken() {
+    const refreshToken = localStorage.getItem("refresh_token");
+
+    const params = new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+        client_id: CLIENT_ID,
+    });
+
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params,
+    });
+
+    const responseBody = await response.json();
+
+    localStorage.setItem("access_token", responseBody.access_token);
+    if (responseBody.refresh_token) {
+        localStorage.setItem("refresh_token", responseBody.refresh_token);
+    }
+
+    return responseBody.refreshToken;
 }
