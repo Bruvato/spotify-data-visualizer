@@ -41,7 +41,7 @@ export async function generateCodeChallenge(codeVerifier) {
 export async function getAccessToken(authorizationCode) {
     const access_token = localStorage.getItem("access_token");
     if (access_token !== null && access_token !== "undefined") {
-        getRefreshToken();
+        await getRefreshToken();
         return localStorage.getItem("access_token");
     }
 
