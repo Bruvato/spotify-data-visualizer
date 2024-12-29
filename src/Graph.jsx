@@ -87,8 +87,7 @@ export default function Graph({ data }) {
         const text = node
             .append("text")
             .attr("clip-path", (d) => `circle(${d.r})`)
-            .style("font-size", (d) => fontScale(d.value) + "px")
-            .style("font-color", "white");
+            .style("font-size", (d) => fontScale(d.value) + "px");
 
         text.selectAll()
             .data((d) => names(d.data))
@@ -105,7 +104,7 @@ export default function Graph({ data }) {
     }, []);
 
     return (
-        <div className="flex flex-row min-h-screen justify-center items-center outline">
+        <div className="fill-gray-900 dark:fill-white">
             <svg
                 ref={svgRef}
                 width={width}

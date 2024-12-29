@@ -66,16 +66,14 @@ export default function Callback() {
     }, [artists]);
 
     if (isPending) {
-        return <p>Loading...</p>;
+        return <div className="text-center">Loading...</div>;
     }
 
     return (
-        <>
-            <h1 className="text-5xl font-bold">
+        <div className="">
+            <h1 className="text-5xl font-bold leading-none tracking-tight ">
                 Welcome, {profile.display_name}
             </h1>
-            <p>Email: {profile.email}</p>
-            <p>{profile.country}</p>
             <img
                 src={profile.images[0].url}
                 alt="profile pictire"
@@ -102,6 +100,6 @@ export default function Callback() {
                     {track.name + ": " + track.popularity}
                 </div>
             ))}
-        </>
+        </div>
     );
 }
