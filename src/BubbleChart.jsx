@@ -2,9 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import * as d3 from "d3";
 
-export default function Graph({ data }) {
-    console.log(data);
-
+export default function BubbleChart({ data }) {
     const svgRef = useRef();
     const hasRun = useRef(false);
 
@@ -15,6 +13,8 @@ export default function Graph({ data }) {
     useEffect(() => {
         if (hasRun.current) return;
         hasRun.current = true;
+
+        console.log(data);
 
         const name = (d) => d.id;
         const group = (d) => d.category;
@@ -28,6 +28,19 @@ export default function Graph({ data }) {
 
         const categories = [...new Set(data.flatMap((d) => group(d)))];
 
+        const map = new Map();
+        for (const d of data.flatMap((d) => group(d))) {
+            if (map.has(d)) {
+                map.set(d, map.get(d) + 1);
+            } else {
+                map.set(d, 1);
+            }
+        }
+        const mapSorted = new Map(
+            [...map.entries()].sort((a, b) => b[1] - a[1])
+        );
+        console.log(mapSorted);
+
         console.log(categories);
 
         const format = d3.format(",");
@@ -35,12 +48,12 @@ export default function Graph({ data }) {
         const pack = d3
             .pack()
             .size([width - margin * 2, height - margin * 2])
-            .padding(3);
+            .padding(10);
 
-        // const color = d3.scaleOrdinal(d3.schemeTableau10);
-        const color = d3
-            .scaleSequential(d3.interpolateTurbo)
-            .domain([data.length - 1, 0]);
+        const color = d3.scaleOrdinal(d3.schemeTableau10);
+        // const color = d3
+        //     .scaleSequential(d3.interpolateTurbo)
+        //     .domain([data.length - 1, 0]);
 
         const root = pack(d3.hierarchy({ children: data }).sum((d) => d.value));
 
@@ -79,9 +92,10 @@ export default function Graph({ data }) {
         node.append("circle")
             // .attr("fill-opacity", (d, i) => circleOpacity(i))
             .attr("fill-opacity", 0.5)
-            .attr("fill", (d, i) => color(i))
-            // .attr("stroke", (d) => color(group(d.data)))
-            .attr("stroke", (d, i) => color(i))
+            .attr("fill", (d) => color(group(d.data)))
+            // .attr("fill", (d, i) => color(i))
+            .attr("stroke", (d) => color(group(d.data)))
+            // .attr("stroke", (d, i) => color(i))
             .attr("r", (d) => d.r);
 
         const text = node

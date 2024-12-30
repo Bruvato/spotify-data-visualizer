@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useState } from "react";
 
 import Home from "./Home";
-import Callback from "./Callback";
+import Dashboard from "./Dashboard";
 
 export default function App() {
     const [darkMode, setDarkMode] = useState(true);
@@ -16,12 +16,12 @@ export default function App() {
             <div
                 className="bg-neutral-100 dark:bg-neutral-900
                 text-gray-900 dark:text-white
-                min-h-screen flex items-start grid content-center"
+                min-h-screen"
             >
                 <Router>
                     <Routes>
                         <Route path="/" element={<Home />} />
-                        <Route path="/callback" element={<Callback />} />
+                        <Route path="/callback" element={<Dashboard />} />
                     </Routes>
                 </Router>
             </div>

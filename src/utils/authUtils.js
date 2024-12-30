@@ -1,5 +1,8 @@
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 
+// const REDIRECT_URI = "http://localhost:5173/callback";
+const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
+
 export async function redirectToAuthCodeFlow() {
     const verifier = generateCodeVerifier(128);
     const challenge = await generateCodeChallenge(verifier);
@@ -9,7 +12,7 @@ export async function redirectToAuthCodeFlow() {
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
         response_type: "code",
-        redirect_uri: "http://localhost:5173/callback",
+        redirect_uri: REDIRECT_URI,
         scope: "user-read-private user-read-email user-top-read",
         code_challenge_method: "S256",
         code_challenge: challenge,
@@ -51,7 +54,7 @@ export async function getAccessToken(authorizationCode) {
         client_id: CLIENT_ID,
         grant_type: "authorization_code",
         code: authorizationCode,
-        redirect_uri: "http://localhost:5173/callback",
+        redirect_uri: REDIRECT_URI,
         code_verifier: verifier,
     });
 

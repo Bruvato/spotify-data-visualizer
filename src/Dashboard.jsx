@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { getAccessToken } from "./utils/authUtils";
 import { fetchProfile, fetchTopArtists, fetchTopTracks } from "./utils/api";
-import Graph from "./Graph";
+import BubbleChart from "./BubbleChart";
+import PieChart from "./PieChart";
 import Slider from "./Slider";
 
-export default function Callback() {
-    const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+export default function Dashboard() {
     const [profile, setProfile] = useState(null);
     const [artists, setArtists] = useState(null);
     const [tracks, setTracks] = useState(null);
@@ -66,7 +66,11 @@ export default function Callback() {
     }, [artists]);
 
     if (isPending) {
-        return <div className="text-center">Loading...</div>;
+        return (
+            <div className="min-h-screen flex items-center grid content-center">
+                <h1 className="text-center">Loading...</h1>
+            </div>
+        );
     }
 
     return (
@@ -81,7 +85,8 @@ export default function Callback() {
             />
             <Slider />
 
-            <Graph data={data} />
+            <BubbleChart data={data} />
+            <PieChart data={data} />
             {artists.map((artist) => (
                 <div className="" key={artist.id}>
                     <p>
