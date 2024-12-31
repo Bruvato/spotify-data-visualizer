@@ -20,7 +20,7 @@ export default function Dashboard() {
         hasRun.current = true;
 
         const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
+        let code = params.get("code");
 
         if (code) {
             (async () => {

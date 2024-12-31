@@ -2,6 +2,7 @@ const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 
 // const REDIRECT_URI = "http://localhost:5173/callback";
 const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
+const SCOPE = "user-read-private user-read-email user-top-read";
 
 export async function redirectToAuthCodeFlow() {
     const verifier = generateCodeVerifier(128);
@@ -13,7 +14,7 @@ export async function redirectToAuthCodeFlow() {
         client_id: CLIENT_ID,
         response_type: "code",
         redirect_uri: REDIRECT_URI,
-        scope: "user-read-private user-read-email user-top-read",
+        scope: SCOPE,
         code_challenge_method: "S256",
         code_challenge: challenge,
     });
@@ -35,6 +36,7 @@ export function generateCodeVerifier(length) {
 export async function generateCodeChallenge(codeVerifier) {
     const data = new TextEncoder().encode(codeVerifier);
     const digest = await window.crypto.subtle.digest("SHA-256", data);
+
     return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
