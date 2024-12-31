@@ -10,7 +10,6 @@ export async function redirectToAuthCodeFlow() {
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
     localStorage.setItem("code_verifier", codeVerifier);
-    document.cookie = `code_verifier=${codeVerifier}; path=/;`;
 
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
