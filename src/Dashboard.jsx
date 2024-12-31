@@ -76,28 +76,36 @@ export default function Dashboard() {
     return (
         <div className="">
             <h1 className="text-5xl font-bold leading-none tracking-tight ">
-                Welcome, {profile.display_name}
+                Welcome, {profile.display_name || "User"}
             </h1>
-            <img
-                src={profile.images[0].url}
-                alt="profile pictire"
-                className="rounded-full"
-            />
+
+            {profile?.images && profile.images[0] && (
+                <img
+                    src={profile.images[0].url}
+                    alt="profile picture"
+                    className="rounded-full"
+                />
+            )}
+
             <Slider />
 
             <BubbleChart data={data} />
+
             <PieChart data={data} />
+
             {artists.map((artist) => (
-                <div className="" key={artist.id}>
-                    <p>
-                        artist: {artist.name}, popularity: {artist.popularity},
-                        genres: {[artist.genres]}
-                    </p>
-                    <img
-                        src={artist.images[0].url}
-                        alt=""
-                        className="rounded-full w-10 h-10"
-                    />
+                <div className="flex items-center" key={artist.id}>
+                    {artist?.images && artist.images[0] && (
+                        <img
+                            src={artist.images[0].url}
+                            alt={`${artist.name} profile`}
+                            className="sm:rounded-sm md:rounded-sm lg:rounded w-10 h-10"
+                        />
+                    )}
+                    <p>{artist.name}</p>:
+                    <span>
+                        popularity: {artist.popularity}, genres: {artist.genres}
+                    </span>
                 </div>
             ))}
             {tracks.map((track) => (
