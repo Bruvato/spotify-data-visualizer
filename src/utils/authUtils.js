@@ -2,27 +2,29 @@ const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 
 // const REDIRECT_URI = "http://localhost:5173/callback";
 const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
+
 const SCOPE = "user-read-private user-read-email user-top-read";
 
 export async function redirectToAuthCodeFlow() {
-    const verifier = generateCodeVerifier(128);
-    const challenge = await generateCodeChallenge(verifier);
+    const codeVerifier = generateCodeVerifier(128);
+    const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    localStorage.setItem("verifier", verifier);
-
+    if (typeof window !== "undefined") {
+        localStorage.setItem("code_verifier", codeVerifier);
+    }
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
         response_type: "code",
         redirect_uri: REDIRECT_URI,
         scope: SCOPE,
         code_challenge_method: "S256",
-        code_challenge: challenge,
+        code_challenge: codeChallenge,
     });
 
     document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
-export function generateCodeVerifier(length) {
+function generateCodeVerifier(length) {
     let text = "";
     let possible =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -33,31 +35,48 @@ export function generateCodeVerifier(length) {
     return text;
 }
 
-export async function generateCodeChallenge(codeVerifier) {
-    const data = new TextEncoder().encode(codeVerifier);
-    const digest = await window.crypto.subtle.digest("SHA-256", data);
+async function generateCodeChallenge(codeVerifier) {
+    const hashed = await sha256(codeVerifier);
+    const codeChallenge = base64encode(hashed);
 
-    return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
+    return codeChallenge;
+}
+
+async function sha256(plain) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plain);
+
+    return window.crypto.subtle.digest("SHA-256", data);
+}
+
+function base64encode(input) {
+    return btoa(String.fromCharCode(...new Uint8Array(input)))
+        .replace(/=/g, "")
         .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
+        .replace(/\//g, "_");
 }
 
 export async function getAccessToken(authorizationCode) {
+    if (typeof window === "undefined") {
+        console.error("Window is not defined. Cannot access localStorage.");
+        return null;
+    }
+
     const access_token = localStorage.getItem("access_token");
-    if (access_token !== null && access_token !== "undefined") {
+
+    if (access_token && access_token !== "undefined") {
         await getRefreshToken();
         return localStorage.getItem("access_token");
     }
 
-    const verifier = localStorage.getItem("verifier");
+    const codeVerifier = localStorage.getItem("code_verifier");
 
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
         grant_type: "authorization_code",
         code: authorizationCode,
         redirect_uri: REDIRECT_URI,
-        code_verifier: verifier,
+        code_verifier: codeVerifier,
     });
 
     const response = await fetch("https://accounts.spotify.com/api/token", {
@@ -74,7 +93,7 @@ export async function getAccessToken(authorizationCode) {
     return responseBody.access_token;
 }
 
-export async function getRefreshToken() {
+async function getRefreshToken() {
     const refreshToken = localStorage.getItem("refresh_token");
 
     const params = new URLSearchParams({
