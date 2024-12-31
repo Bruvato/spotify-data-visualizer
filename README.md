@@ -1,8 +1,67 @@
-# React + Vite
+---
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Spotify Data Visualizer
 
-Currently, two official plugins are available:
+Spotify Data Visualizer is a web app that lets you explore your Spotify stats. Generate insights about your top artists, tracks, and genres.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
+
+## Features
+
+- **View Your Spotify Stats:**  
+  Discover your top artists, favorite tracks, and most-played genres.
+
+- **Interactive Visualizations:**  
+  Graphs and charts to represent your listening habits.
+
+---
+
+## Tools Used
+
+- **Frontend:** React, TailwindCSS  
+- **Spotify API:** Fetching user data  
+- **Authentication:** OAuth 2.0 with PKCE Flow  
+- **Data Visualization:** D3.js  
+
+---
+
+## Installation
+
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/yourusername/spotify-data-visualizer.git
+   ```
+2. Navigate to the project directory:  
+   ```bash
+   cd spotify-data-visualizer
+   ```
+3. Install dependencies:  
+   ```bash
+   npm install
+   ```
+4. Set up environment variables:  
+   Create a `.env` file in the root directory and add the following:
+   ```
+   VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id
+   ```
+5. Start the development server:  
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Usage
+
+1. Visit the app in your browser at `http://localhost:5173`.  
+2. Log in with your Spotify account to authorize the app.  
+
+---
+
+## API Reference
+
+- **Spotify Web API:**  
+  - [Authorization Code Flow](https://developer.spotify.com/documentation/general/guides/authorization/code-flow/)  
+  - [Get Top Artists and Tracks](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-users-top-artists-and-tracks)  
+
+---
