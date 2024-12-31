@@ -1,7 +1,7 @@
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 
-// const REDIRECT_URI = "http://localhost:5173/callback";
-const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
+const REDIRECT_URI = "http://localhost:5173/callback";
+// const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
 
 const SCOPE = "user-read-private user-read-email user-top-read";
 
@@ -10,6 +10,7 @@ export async function redirectToAuthCodeFlow() {
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
     localStorage.setItem("code_verifier", codeVerifier);
+    document.cookie = `code_verifier=${codeVerifier}; path=/;`;
 
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
@@ -55,7 +56,7 @@ function base64encode(input) {
         .replace(/\//g, "_");
 }
 
-export async function getAccessToken(authorizationCode, codeVerifier) {
+export async function getAccessToken(authorizationCode) {
     const access_token = localStorage.getItem("access_token");
 
     if (access_token && access_token !== "undefined") {
@@ -63,7 +64,7 @@ export async function getAccessToken(authorizationCode, codeVerifier) {
         return localStorage.getItem("access_token");
     }
 
-    // const codeVerifier = localStorage.getItem("code_verifier");
+    const codeVerifier = localStorage.getItem("code_verifier");
 
     const params = new URLSearchParams({
         client_id: CLIENT_ID,

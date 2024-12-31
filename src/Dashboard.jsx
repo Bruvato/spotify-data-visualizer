@@ -21,11 +21,10 @@ export default function Dashboard() {
 
         const params = new URLSearchParams(window.location.search);
         let code = params.get("code");
-        const codeVerifier = localStorage.getItem("code_verifier");
 
         if (code) {
             (async () => {
-                const accessToken = await getAccessToken(code, codeVerifier);
+                const accessToken = await getAccessToken(code);
 
                 const userProfile = await fetchProfile(accessToken);
                 setProfile(userProfile);
