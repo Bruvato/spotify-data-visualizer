@@ -1,7 +1,7 @@
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 
-// const REDIRECT_URI = "http://localhost:5173/callback";
-const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
+const REDIRECT_URI = "http://localhost:5173/callback";
+// const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
 
 const SCOPE = "user-read-private user-read-email user-top-read";
 
@@ -9,9 +9,8 @@ export async function redirectToAuthCodeFlow() {
     const codeVerifier = generateCodeVerifier(128);
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    if (typeof window !== "undefined") {
-        localStorage.setItem("code_verifier", codeVerifier);
-    }
+    localStorage.setItem("code_verifier", codeVerifier);
+
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
         response_type: "code",
@@ -56,12 +55,7 @@ function base64encode(input) {
         .replace(/\//g, "_");
 }
 
-export async function getAccessToken(authorizationCode) {
-    if (typeof window === "undefined") {
-        console.error("Window is not defined. Cannot access localStorage.");
-        return null;
-    }
-
+export async function getAccessToken(authorizationCode, codeVerifier) {
     const access_token = localStorage.getItem("access_token");
 
     if (access_token && access_token !== "undefined") {
@@ -69,7 +63,7 @@ export async function getAccessToken(authorizationCode) {
         return localStorage.getItem("access_token");
     }
 
-    const codeVerifier = localStorage.getItem("code_verifier");
+    // const codeVerifier = localStorage.getItem("code_verifier");
 
     const params = new URLSearchParams({
         client_id: CLIENT_ID,
