@@ -16,20 +16,8 @@ export default function BubbleChart({ data }) {
 
         console.log(data);
 
-        const name = (d) => d.id;
-        const group = (d) => d.category;
-        const names = (d) => name(d).split(" ");
-
-        const fontScale = d3.scaleLinear(
-            [d3.min(data, (d) => d.value), d3.max(data, (d) => d.value)],
-            [10, 20]
-        );
-        const circleOpacity = d3.scaleLinear([0, data.length - 1], [1, 0.1]);
-
-        const categories = [...new Set(data.flatMap((d) => group(d)))];
-
         const map = new Map();
-        for (const d of data.flatMap((d) => group(d))) {
+        for (const d of data.flatMap((d) => d.category)) {
             if (map.has(d)) {
                 map.set(d, map.get(d) + 1);
             } else {
@@ -39,8 +27,21 @@ export default function BubbleChart({ data }) {
         const mapSorted = new Map(
             [...map.entries()].sort((a, b) => b[1] - a[1])
         );
-        console.log(mapSorted);
+        const cats = Array.from(mapSorted.keys()).slice(0, 10);
+        console.log(cats);
 
+        const name = (d) => d.id;
+        const group = (d) =>
+            cats.includes(d.category[0]) ? d.category[0] : "other";
+        const names = (d) => name(d).split(" ");
+
+        const fontScale = d3.scaleLinear(
+            [d3.min(data, (d) => d.value), d3.max(data, (d) => d.value)],
+            [10, 20]
+        );
+        const circleOpacity = d3.scaleLinear([0, data.length - 1], [1, 0.1]);
+
+        const categories = [...new Set(data.flatMap((d) => group(d)))];
         console.log(categories);
 
         const format = d3.format(",");
@@ -48,7 +49,7 @@ export default function BubbleChart({ data }) {
         const pack = d3
             .pack()
             .size([width - margin * 2, height - margin * 2])
-            .padding(10);
+            .padding(3);
 
         const color = d3.scaleOrdinal(d3.schemeTableau10);
         // const color = d3
@@ -71,14 +72,24 @@ export default function BubbleChart({ data }) {
         //     )
         //     .attr("text-anchor", "middle");
 
-        const legend = svgElement
+        const dot = svgElement
+            .append("g")
             .selectAll()
             .data(categories)
-            .join("circle")
-            .attr("cx", 50)
-            .attr("cy", (d, i) => 50 + i * 50)
+            .join("g")
+            .attr("transform", (d, i) => `translate(${50},${50 + i * 50})`);
+
+        dot.append("circle")
             .attr("r", 10)
             .attr("fill", (d) => color(d));
+
+        dot.append("text")
+            .attr("x", 20)
+            .attr("y", 0)
+            .text((d) => d)
+            .attr("font-size", 10)
+            .attr("text-anchor", "start")
+            .attr("alignment-baseline", "center");
 
         const node = svgElement
             .append("g")
@@ -118,7 +129,7 @@ export default function BubbleChart({ data }) {
     }, []);
 
     return (
-        <div className="fill-gray-900 dark:fill-white">
+        <div className="fill-neutral-900 dark:fill-neutral-100">
             <svg
                 ref={svgRef}
                 width={width}

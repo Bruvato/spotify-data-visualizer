@@ -1,8 +1,12 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useState } from "react";
 
-import Home from "./Home";
-import Dashboard from "./Dashboard";
+import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import NoPage from "./pages/NoPage";
+
+import Button from "./components/Button";
+import { AiOutlineSun, AiOutlineMoon } from "react-icons/ai";
 
 export default function App() {
     const [darkMode, setDarkMode] = useState(true);
@@ -12,24 +16,32 @@ export default function App() {
     };
 
     return (
-        <div className={`${darkMode && "dark"}`}>
+        <main className={`${darkMode && "dark"}`}>
             <div
                 className="bg-neutral-100 dark:bg-neutral-900
-                text-gray-900 dark:text-white
-                min-h-screen"
+                    text-neutral-900 dark:text-neutral-100
+                    min-h-screen"
             >
                 <Router>
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/callback" element={<Dashboard />} />
+                        <Route path="*" element={<NoPage />} />
                     </Routes>
                 </Router>
             </div>
 
-            <button
+            <Button
                 onClick={handleDarkMode}
-                className="fixed w-16 h-16 bottom-16 right-16 rounded-full bg-neutral-900 dark:bg-neutral-100"
-            ></button>
-        </div>
+                className="fixed w-16 h-16 bottom-16 right-16"
+                variant="icon"
+            >
+                {darkMode ? (
+                    <AiOutlineSun className="w-10 h-10 fill-neutral-900" />
+                ) : (
+                    <AiOutlineMoon className="w-10 h-10 fill-neutral-100" />
+                )}
+            </Button>
+        </main>
     );
 }

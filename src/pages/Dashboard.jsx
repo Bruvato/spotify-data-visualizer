@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { getAccessToken } from "./utils/authUtils";
-import { fetchProfile, fetchTopArtists, fetchTopTracks } from "./utils/api";
-import BubbleChart from "./BubbleChart";
-import PieChart from "./PieChart";
-import Slider from "./Slider";
+import { getAccessToken } from "../utils/authUtils";
+import { fetchProfile, fetchTopArtists, fetchTopTracks } from "../utils/api";
+import BubbleChart from "../components/BubbleChart";
+import PieChart from "../components/PieChart";
+import Slider from "../components/Slider";
 
 export default function Dashboard() {
     const [profile, setProfile] = useState(null);
