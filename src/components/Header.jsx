@@ -1,4 +1,5 @@
 import Button from "./Button";
+import Wrapper from "./Wrapper";
 
 import { redirectToAuthCodeFlow } from "../utils/authUtils";
 
@@ -21,11 +22,7 @@ export default function Header({ profile }) {
             shadow-md
             z-50"
         >
-            <div
-                className="mx-auto max-w-md px-4 sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8 flex w-full justify-between items-center
-                py-4
-                font-bold"
-            >
+            <Wrapper className="w-full flex justify-between items-center py-4 font-bold">
                 <a href="" className="flex items-center gap-2">
                     <AiFillSpotify className="w-10 h-10" />
                     <h3 className="text-xl">Spotify Data Visualizer</h3>
@@ -63,7 +60,7 @@ export default function Header({ profile }) {
                         </Button>
                     </li>
                 </ul>
-            </div>
+            </Wrapper>
         </nav>
     );
 }

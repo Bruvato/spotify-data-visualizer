@@ -3,7 +3,8 @@ const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = "http://localhost:5173/callback";
 // const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
 
-const SCOPE = "user-read-private user-read-email user-top-read";
+const SCOPE =
+    "user-read-private user-read-email user-top-read user-follow-read";
 
 export async function redirectToAuthCodeFlow() {
     const codeVerifier = generateCodeVerifier(128);

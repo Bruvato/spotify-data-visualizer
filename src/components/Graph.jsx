@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 
 import * as d3 from "d3";
 
-export default function BubbleChart({ data }) {
-    const svgRef = useRef();
+export default function Graph({ data }) {
+    const graphRef = useRef();
+    const legendRef = useRef();
     const hasRun = useRef(false);
 
     const width = 928;
@@ -60,7 +61,8 @@ export default function BubbleChart({ data }) {
 
         console.log(root);
 
-        const svgElement = d3.select(svgRef.current);
+        const svgGraph = d3.select(graphRef.current);
+        const svgLegend = d3.select(legendRef.current);
         // svgElement
         //     .append("svg")
         //     .attr("width", width)
@@ -72,7 +74,7 @@ export default function BubbleChart({ data }) {
         //     )
         //     .attr("text-anchor", "middle");
 
-        const dot = svgElement
+        const dot = svgLegend
             .append("g")
             .selectAll()
             .data(categories)
@@ -91,7 +93,7 @@ export default function BubbleChart({ data }) {
             .attr("text-anchor", "start")
             .attr("alignment-baseline", "center");
 
-        const node = svgElement
+        const node = svgGraph
             .append("g")
             .selectAll()
             .data(root.leaves())
@@ -129,9 +131,10 @@ export default function BubbleChart({ data }) {
     }, []);
 
     return (
-        <div className="fill-neutral-900 dark:fill-neutral-100">
+        <div className="fill-neutral-900 dark:fill-neutral-100 flex">
+            <svg ref={legendRef} className="w-48"></svg>
             <svg
-                ref={svgRef}
+                ref={graphRef}
                 width={width}
                 height={height}
                 viewBox={`${-margin} ${-margin} ${width} ${height}`}
@@ -139,7 +142,6 @@ export default function BubbleChart({ data }) {
                     maxWidth: "100%",
                     height: "auto",
                     font: "10px sans-serif",
-                    outline: "thin solid blue",
                 }}
                 textAnchor="middle"
                 shapeRendering="optimizeQuality"

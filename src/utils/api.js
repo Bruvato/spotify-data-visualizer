@@ -1,18 +1,18 @@
-export async function fetchProfile(access_token) {
+export async function fetchProfile(acessToken) {
     const response = await fetch("https://api.spotify.com/v1/me", {
         method: "GET",
         headers: {
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${acessToken}`,
         },
     });
 
     return await response.json();
 }
 
-export async function fetchTopArtists(access_token, time_range, limit, offset) {
+export async function fetchTopArtists(acessToken, timeRange, limit, offset) {
     const params = new URLSearchParams({
         type: "artists",
-        time_range: time_range,
+        time_range: timeRange,
         limit: limit,
         offset: offset,
     });
@@ -22,7 +22,7 @@ export async function fetchTopArtists(access_token, time_range, limit, offset) {
         {
             method: "GET",
             headers: {
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${acessToken}`,
             },
         }
     );
@@ -30,12 +30,12 @@ export async function fetchTopArtists(access_token, time_range, limit, offset) {
     return await response.json();
 }
 
-export async function fetchTopTracks(access_token) {
+export async function fetchTopTracks(acessToken, timeRange, limit, offset) {
     const params = new URLSearchParams({
         type: "tracks",
-        time_range: "long_term",
-        limit: 50,
-        offset: 0,
+        time_range: timeRange,
+        limit: limit,
+        offset: offset,
     });
 
     const response = await fetch(
@@ -43,7 +43,26 @@ export async function fetchTopTracks(access_token) {
         {
             method: "GET",
             headers: {
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${acessToken}`,
+            },
+        }
+    );
+
+    return await response.json();
+}
+
+export async function fetchFollowedArtists(acessToken, limit) {
+    const params = new URLSearchParams({
+        type: "artist",
+        limit: limit,
+    });
+
+    const response = await fetch(
+        `https://api.spotify.com/v1/me/following?${params.toString()}`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${acessToken}`,
             },
         }
     );
