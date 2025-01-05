@@ -4,6 +4,7 @@ import { fetchProfile, fetchTopArtists, fetchTopTracks } from "../utils/api";
 import BubbleChart from "../components/BubbleChart";
 import PieChart from "../components/PieChart";
 import Slider from "../components/Slider";
+import Header from "../components/Header";
 
 export default function Dashboard() {
     const [profile, setProfile] = useState(null);
@@ -74,45 +75,56 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="">
-            <h1 className="text-5xl font-bold leading-none tracking-tight ">
-                Welcome, {profile.display_name || "User"}
-            </h1>
+        <>
+            <Header profile={profile} />
+            <div className="pt-20">
+                <h1 className="text-5xl font-bold leading-none tracking-tight ">
+                    Welcome, {profile.display_name || "User"}
+                </h1>
 
-            {profile?.images && profile.images[0] && (
                 <img
                     src={profile.images[0].url}
                     alt="profile picture"
                     className="rounded-full"
                 />
-            )}
+                <h2>{profile.country}</h2>
+                <h2>{profile.followers.total} Followers</h2>
 
-            <Slider />
+                <BubbleChart data={data} />
 
-            <BubbleChart data={data} />
+                <PieChart data={data} />
 
-            <PieChart data={data} />
+                <h1 className="text-4xl">Top Artists</h1>
 
-            {artists.map((artist) => (
-                <div className="flex items-center" key={artist.id}>
-                    {artist?.images && artist.images[0] && (
+                {artists.map((artist) => (
+                    <div className="flex items-center" key={artist.id}>
                         <img
                             src={artist.images[0].url}
                             alt={`${artist.name} profile`}
                             className="sm:rounded-sm md:rounded-sm lg:rounded w-10 h-10"
                         />
-                    )}
-                    <p>{artist.name}</p>:
-                    <span>
-                        popularity: {artist.popularity}, genres: {artist.genres}
-                    </span>
-                </div>
-            ))}
-            {tracks.map((track) => (
-                <div className="" key={track.id}>
-                    {track.name + ": " + track.popularity}
-                </div>
-            ))}
-        </div>
+                        <p>{artist.name}</p>:
+                        <span>
+                            popularity: {artist.popularity}, genres:{" "}
+                            {artist.genres}
+                        </span>
+                    </div>
+                ))}
+
+                <h1 className="text-4xl">Top Tracks</h1>
+
+                {tracks.map((track) => (
+                    <div className="flex items-center" key={track.id}>
+                        <img
+                            src={track.album.images[0].url}
+                            alt={`${track.album.name} image`}
+                            className="sm:rounded-sm md:rounded-sm lg:rounded w-10 h-10"
+                        />
+                        <p>{track.name}</p>:
+                        <span>popularity: {track.popularity},</span>
+                    </div>
+                ))}
+            </div>
+        </>
     );
 }

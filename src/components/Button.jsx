@@ -17,10 +17,8 @@ const buttonVariants = cva("", {
     variants: {
         variant: {
             primary: "font-bold py-2 px-4 text-center rounded-full",
-            icon: "rounded-full flex justify-center items-center bg-neutral-900 dark:bg-neutral-100",
+            icon: "rounded-full flex justify-center items-center",
         },
     },
-    defaultVariants: {
-        variant: "primary",
-    },
+    defaultVariants: {},
 });

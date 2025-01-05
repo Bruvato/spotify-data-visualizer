@@ -3,5 +3,10 @@
 @tailwind utilities;
 
 * {
+    box-sizing: border-box;
     @apply transition-colors duration-300 ease-in-out;
+}
+
+body {
+    margin: 0;
 }
