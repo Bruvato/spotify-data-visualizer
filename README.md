@@ -1,3 +1,5 @@
+![alt text](https://github.com/Bruvato/spotify-data-visualizer/blob/master/src/images/test.png)
+
 ---
 
 # Spotify Data Visualizer
