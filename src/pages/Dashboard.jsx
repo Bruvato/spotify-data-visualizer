@@ -11,6 +11,7 @@ import PieChart from "../components/PieChart";
 import Slider from "../components/Slider";
 import Header from "../components/Header";
 import Wrapper from "../components/Wrapper";
+import ContentWrapper from "../components/ContentWrapper";
 
 export default function Dashboard() {
     const [timeRange, setTimeRange] = useState("long_term");
@@ -95,7 +96,7 @@ export default function Dashboard() {
             <Header profile={profile} />
             <div className="pt-24">
                 <Wrapper className="">
-                    <section className="px-12 py-12 flex items-center gap-4 rounded-2xl dark:bg-neutral-800 bg-neutral-200">
+                    <ContentWrapper className="flex items-center gap-4">
                         <img
                             src={profile.images[0].url}
                             alt="profile picture"
@@ -113,13 +114,13 @@ export default function Dashboard() {
                                 Following • {profile.country}
                             </h2>
                         </div>
-                    </section>
+                    </ContentWrapper>
                 </Wrapper>
             </div>
 
             <Wrapper className="mt-8">
-                <section className="rounded-2xl dark:bg-neutral-800 bg-neutral-200">
-                    <div className="px-12 py-12 grid gap-2">
+                <ContentWrapper className="grid gap-4">
+                    <div className="grid gap-2">
                         <h2 className="text-4xl font-bold">
                             Top Artists by Followers
                         </h2>
@@ -129,7 +130,7 @@ export default function Dashboard() {
                         </p>
                     </div>
                     <Graph data={data} />
-                </section>
+                </ContentWrapper>
 
                 <section>
                     <PieChart data={data} />

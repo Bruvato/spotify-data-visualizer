@@ -79,7 +79,7 @@ export default function Graph({ data }) {
             .selectAll()
             .data(categories)
             .join("g")
-            .attr("transform", (d, i) => `translate(${50},${50 + i * 50})`);
+            .attr("transform", (d, i) => `translate(${10},${10 + i * 25})`);
 
         dot.append("circle")
             .attr("r", 10)
