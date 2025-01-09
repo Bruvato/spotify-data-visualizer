@@ -149,31 +149,42 @@ export default function Dashboard() {
             </Wrapper>
 
             <h1 className="text-4xl">Top Artists</h1>
-            {artists.map((artist) => (
-                <div className="flex items-center" key={artist.id}>
-                    <img
-                        src={artist.images[0].url}
-                        alt={`${artist.name} profile`}
-                        className="sm:rounded-sm md:rounded-sm lg:rounded w-10 h-10"
-                    />
-                    <p>{artist.name}</p>:
-                    <span>
-                        popularity: {artist.popularity}, genres: {artist.genres}
-                    </span>
-                </div>
-            ))}
+
+            {artists.length == 0 ? (
+                artists.map((artist) => (
+                    <div className="flex items-center" key={artist.id}>
+                        <img
+                            src={artist.images[0].url}
+                            alt={`${artist.name} profile`}
+                            className="sm:rounded-sm md:rounded-sm lg:rounded w-10 h-10"
+                        />
+                        <p>{artist.name}</p>:
+                        <span>
+                            popularity: {artist.popularity}, genres:{" "}
+                            {artist.genres}
+                        </span>
+                    </div>
+                ))
+            ) : (
+                <div>Not Enough Data...</div>
+            )}
+
             <h1 className="text-4xl">Top Tracks</h1>
-            {tracks.map((track) => (
-                <div className="flex items-center" key={track.id}>
-                    <img
-                        src={track.album.images[0].url}
-                        alt={`${track.album.name} image`}
-                        className="sm:rounded-sm md:rounded-sm lg:rounded w-10 h-10"
-                    />
-                    <p>{track.name}</p>:
-                    <span>popularity: {track.popularity},</span>
-                </div>
-            ))}
+            {tracks.length == 0 ? (
+                tracks.map((track) => (
+                    <div className="flex items-center" key={track.id}>
+                        <img
+                            src={track.album.images[0].url}
+                            alt={`${track.album.name} image`}
+                            className="sm:rounded-sm md:rounded-sm lg:rounded w-10 h-10"
+                        />
+                        <p>{track.name}</p>:
+                        <span>popularity: {track.popularity},</span>
+                    </div>
+                ))
+            ) : (
+                <div>Not Enough Data...</div>
+            )}
         </>
     );
 }
