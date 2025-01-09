@@ -8,6 +8,8 @@ import {
 } from "../utils/api";
 import Graph from "../components/Graph";
 import PieChart from "../components/PieChart";
+import WordCloud from "../components/WordCloud";
+
 import Slider from "../components/Slider";
 import Header from "../components/Header";
 import Wrapper from "../components/Wrapper";
@@ -74,12 +76,14 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (artists) {
-            const newData = artists.map((artist) => ({
-                id: artist.name,
-                value: artist.followers.total,
-                category: artist.genres,
+
+            const artistData = artists.map((artist) => ({
+                name: artist.name,
+                followers: artist.followers.total,
+                genres: artist.genres,
             }));
-            setData(newData);
+
+            setData(artistData);
         }
     }, [artists, timeRange]);
 
@@ -97,15 +101,21 @@ export default function Dashboard() {
             <div className="pt-24">
                 <Wrapper className="">
                     <ContentWrapper className="flex items-center gap-4">
-                        <img
-                            src={profile.images[0].url}
-                            alt="profile picture"
-                            className="rounded-full w-48 h-48"
-                        />
+                        {profile.images[0].url ? (
+                            <img
+                                src={profile.images[0].url}
+                                alt="profile picture"
+                                className="rounded-full w-48 h-48"
+                            />
+                        ) : (
+                            <div></div>
+                        )}
                         <div className="grid gap-2">
+                            
                             <h1 className="text-5xl font-bold leading-none tracking-tight ">
                                 Welcome, {profile.display_name || "User"}
                             </h1>
+
                             <h2 className="text-xl">
                                 {profile.followers.total} Followers •{" "}
                                 {followedArtists.artists.total == 50
@@ -134,6 +144,9 @@ export default function Dashboard() {
 
                 <section>
                     <PieChart data={data} />
+                </section>
+                <section>
+                    <WordCloud data={data} />
                 </section>
             </Wrapper>
 

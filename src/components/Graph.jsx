@@ -18,7 +18,7 @@ export default function Graph({ data }) {
         console.log(data);
 
         const map = new Map();
-        for (const d of data.flatMap((d) => d.category)) {
+        for (const d of data.flatMap((d) => d.genres)) {
             if (map.has(d)) {
                 map.set(d, map.get(d) + 1);
             } else {
@@ -31,13 +31,16 @@ export default function Graph({ data }) {
         const cats = Array.from(mapSorted.keys()).slice(0, 10);
         console.log(cats);
 
-        const name = (d) => d.id;
+        const name = (d) => d.name;
         const group = (d) =>
-            cats.includes(d.category[0]) ? d.category[0] : "other";
+            cats.includes(d.genres[0]) ? d.genres[0] : "other";
         const names = (d) => name(d).split(" ");
 
         const fontScale = d3.scaleLinear(
-            [d3.min(data, (d) => d.value), d3.max(data, (d) => d.value)],
+            [
+                d3.min(data, (d) => d.followers),
+                d3.max(data, (d) => d.followers),
+            ],
             [10, 20]
         );
         const circleOpacity = d3.scaleLinear([0, data.length - 1], [1, 0.1]);
@@ -57,7 +60,9 @@ export default function Graph({ data }) {
         //     .scaleSequential(d3.interpolateTurbo)
         //     .domain([data.length - 1, 0]);
 
-        const root = pack(d3.hierarchy({ children: data }).sum((d) => d.value));
+        const root = pack(
+            d3.hierarchy({ children: data }).sum((d) => d.followers)
+        );
 
         console.log(root);
 
@@ -100,7 +105,7 @@ export default function Graph({ data }) {
             .join("g")
             .attr("transform", (d) => `translate(${d.x},${d.y})`);
 
-        node.append("title").text((d) => `${d.data.id}\n${format(d.value)}`);
+        node.append("title").text((d) => `${d.data.name}\n${format(d.value)}`);
 
         node.append("circle")
             // .attr("fill-opacity", (d, i) => circleOpacity(i))

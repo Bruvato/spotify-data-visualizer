@@ -1,7 +1,6 @@
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 
-// const REDIRECT_URI = "http://localhost:5173/callback";
-const REDIRECT_URI = "https://spotify-data-visualizer-tau.vercel.app/callback";
+const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
 
 const SCOPE =
     "user-read-private user-read-email user-top-read user-follow-read";
