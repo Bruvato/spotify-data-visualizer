@@ -76,7 +76,6 @@ export default function Dashboard() {
 
     useEffect(() => {
         if (artists) {
-
             const artistData = artists.map((artist) => ({
                 name: artist.name,
                 followers: artist.followers.total,
@@ -101,7 +100,7 @@ export default function Dashboard() {
             <div className="pt-24">
                 <Wrapper className="">
                     <ContentWrapper className="flex items-center gap-4">
-                        {profile.images[0].url ? (
+                        {profile?.images?.[0]?.url ? (
                             <img
                                 src={profile.images[0].url}
                                 alt="profile picture"
@@ -111,7 +110,6 @@ export default function Dashboard() {
                             <div></div>
                         )}
                         <div className="grid gap-2">
-                            
                             <h1 className="text-5xl font-bold leading-none tracking-tight ">
                                 Welcome, {profile.display_name || "User"}
                             </h1>
