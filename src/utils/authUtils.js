@@ -9,6 +9,7 @@ export async function redirectToAuthCodeFlow() {
     const codeVerifier = generateCodeVerifier(128);
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
+    localStorage.clear();
     localStorage.setItem("code_verifier", codeVerifier);
 
     const params = new URLSearchParams({

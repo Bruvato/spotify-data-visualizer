@@ -1,7 +1,9 @@
+import { redirectToAuthCodeFlow } from "../utils/authUtils";
+
 import Button from "./Button";
 import Wrapper from "./Wrapper";
 
-import { redirectToAuthCodeFlow } from "../utils/authUtils";
+import ProfilePicture from "./ProfilePicture";
 
 import { AiFillSpotify } from "react-icons/ai";
 import { AiOutlineUser } from "react-icons/ai";
@@ -38,15 +40,10 @@ export default function Header({ profile }) {
                                 <h1>
                                     {profile ? profile.display_name : "User"}
                                 </h1>
-                                {profile ? (
-                                    <img
-                                        src={profile.images[0].url}
-                                        alt="User Profile Picutre"
-                                        className="w-10 h-10 rounded-full"
-                                    />
-                                ) : (
-                                    <AiOutlineUser className="w-10 h-10 rounded-full bg-neutral-400 fill-neutral-900" />
-                                )}
+                                <ProfilePicture
+                                    profile={profile}
+                                    className="size-10"
+                                ></ProfilePicture>
                             </Button>
                         </a>
                     </li>

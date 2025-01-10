@@ -6,6 +6,9 @@ import {
     fetchTopTracks,
     fetchFollowedArtists,
 } from "../utils/api";
+
+import ProfilePicture from "../components/ProfilePicture";
+
 import Graph from "../components/Graph";
 import PieChart from "../components/PieChart";
 import WordCloud from "../components/WordCloud";
@@ -99,16 +102,9 @@ export default function Dashboard() {
             <Header profile={profile} />
             <div className="pt-24">
                 <Wrapper className="">
-                    <ContentWrapper className="flex items-center gap-4">
-                        {profile?.images?.[0]?.url ? (
-                            <img
-                                src={profile.images[0].url}
-                                alt="profile picture"
-                                className="rounded-full w-48 h-48"
-                            />
-                        ) : (
-                            <div></div>
-                        )}
+                    <ContentWrapper className="flex items-center gap-6">
+                        <ProfilePicture profile={profile} className="size-48" />
+
                         <div className="grid gap-2">
                             <h1 className="text-5xl font-bold leading-none tracking-tight ">
                                 Welcome, {profile.display_name || "User"}
@@ -132,11 +128,13 @@ export default function Dashboard() {
                         <h2 className="text-4xl font-bold">
                             Top Artists by Followers
                         </h2>
+
                         <p className="">
                             Your Top Artists by Followers and connected by
                             genres
                         </p>
                     </div>
+
                     <Graph data={data} />
                 </ContentWrapper>
 
