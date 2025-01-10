@@ -2,11 +2,15 @@ import { twMerge } from "tailwind-merge";
 
 export default function ProfilePicture({ profile, className }) {
     return (
-        <div className="rounded-full">
+        <div className={twMerge(className, "")}>
             {profile?.images?.[0]?.url ? (
-                <img src={profile.images[0].url} alt="profile picture" />
+                <img
+                    src={profile.images[0].url}
+                    alt="profile picture"
+                    className="rounded-full"
+                />
             ) : (
-                <svg className={twMerge(className, "")} viewBox="0 0 100 100">
+                <svg viewBox="0 0 100 100">
                     <circle
                         className="fill-neutral-950"
                         cx="50%"

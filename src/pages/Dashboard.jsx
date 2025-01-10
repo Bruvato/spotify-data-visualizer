@@ -17,6 +17,7 @@ import Slider from "../components/Slider";
 import Header from "../components/Header";
 import Wrapper from "../components/Wrapper";
 import ContentWrapper from "../components/ContentWrapper";
+import DataWrapper from "../components/DataWrapper";
 
 export default function Dashboard() {
     const [timeRange, setTimeRange] = useState("long_term");
@@ -122,28 +123,28 @@ export default function Dashboard() {
                 </Wrapper>
             </div>
 
-            <Wrapper className="mt-8">
-                <ContentWrapper className="grid gap-4">
-                    <div className="grid gap-2">
-                        <h2 className="text-4xl font-bold">
-                            Top Artists by Followers
-                        </h2>
-
-                        <p className="">
-                            Your Top Artists by Followers and connected by
-                            genres
-                        </p>
-                    </div>
-
-                    <Graph data={data} />
+            <Wrapper className="mt-8 grid gap-4">
+                <ContentWrapper className="">
+                    <DataWrapper
+                        data={data}
+                        dataTitle={"Top Artists Network Graph"}
+                        dataSubtitle={
+                            "Your Top Artists sized by Followers and Connected by Genres"
+                        }
+                    >
+                        <Graph data={data} />
+                    </DataWrapper>
                 </ContentWrapper>
 
-                <section>
-                    <PieChart data={data} />
-                </section>
-                <section>
-                    <WordCloud data={data} />
-                </section>
+                <ContentWrapper>
+                    <DataWrapper
+                        data={data}
+                        dataTitle={"Top Genres Word Cloud"}
+                        dataSubtitle={"Your Top Genres"}
+                    >
+                        <WordCloud data={data} />
+                    </DataWrapper>
+                </ContentWrapper>
             </Wrapper>
 
             <h1 className="text-4xl">Top Artists</h1>

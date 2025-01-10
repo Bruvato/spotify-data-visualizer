@@ -12,10 +12,6 @@ export default function Graph({ data }) {
     const margin = 1;
 
     useEffect(() => {
-        if (data.length == 0) {
-            return;
-        }
-
         if (hasRun.current) return;
         hasRun.current = true;
 
@@ -36,8 +32,11 @@ export default function Graph({ data }) {
         console.log(cats);
 
         const name = (d) => d.name;
-        const group = (d) =>
-            cats.includes(d.genres[0]) ? d.genres[0] : "other";
+        const group = (d) => {
+            const found = d.genres.find((r) => cats.includes(r));
+            return found || "other";
+        };
+
         const names = (d) => name(d).split(" ");
 
         const fontScale = d3.scaleLinear(
@@ -140,27 +139,21 @@ export default function Graph({ data }) {
     }, []);
 
     return (
-        <>
-            {data.length == 0 ? (
-                <div className="font-bold text-xl">Not Enough Data...</div>
-            ) : (
-                <div className="fill-neutral-900 dark:fill-neutral-100 flex">
-                    <svg ref={legendRef} className="w-48"></svg>
-                    <svg
-                        ref={graphRef}
-                        width={width}
-                        height={height}
-                        viewBox={`${-margin} ${-margin} ${width} ${height}`}
-                        style={{
-                            maxWidth: "100%",
-                            height: "auto",
-                            font: "10px sans-serif",
-                        }}
-                        textAnchor="middle"
-                        shapeRendering="optimizeQuality"
-                    ></svg>
-                </div>
-            )}
-        </>
+        <div className="fill-neutral-900 dark:fill-neutral-100 flex">
+            <svg ref={legendRef} className="w-48"></svg>
+            <svg
+                ref={graphRef}
+                width={width}
+                height={height}
+                viewBox={`${-margin} ${-margin} ${width} ${height}`}
+                style={{
+                    maxWidth: "100%",
+                    height: "auto",
+                    font: "10px sans-serif",
+                }}
+                textAnchor="middle"
+                shapeRendering="optimizeQuality"
+            ></svg>
+        </div>
     );
 }

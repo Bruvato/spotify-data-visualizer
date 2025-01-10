@@ -43,7 +43,7 @@ export default function Header({ profile }) {
                                 <ProfilePicture
                                     profile={profile}
                                     className="size-10"
-                                ></ProfilePicture>
+                                />
                             </Button>
                         </a>
                     </li>
