@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import SpotifyProvider from "next-auth/providers/spotify";
 
 declare module "next-auth" {
@@ -13,7 +13,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID ?? "",
@@ -33,9 +33,11 @@ const handler = NextAuth({
       return session;
     },
   },
-  // pages: {
-  //   signIn: "/auth/signin",
-  // },
-});
+  pages: {
+    signIn: "/auth/signin",
+  },
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

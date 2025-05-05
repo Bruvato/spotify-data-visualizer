@@ -148,8 +148,8 @@ export const Header = () => {
               Sign out
             </Button>
           ) : (
-            <Button variant="outline" onClick={() => signIn()}>
-              Sign in
+            <Button variant="outline">
+              <Link href="/auth/signin">Sign in</Link>
             </Button>
           )}
 

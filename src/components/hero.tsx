@@ -34,9 +34,11 @@ export const Hero = () => {
                 </Link>
               </Button>
             ) : (
-              <Button size="lg" className="gap-4" onClick={() => signIn()}>
-                Sign in
-                <MoveRight className="w-4 h-4" />
+              <Button size="lg" className="gap-4" asChild>
+                <Link href="/auth/signin">
+                  Sign in
+                  <MoveRight className="w-4 h-4" />
+                </Link>
               </Button>
             )}
           </div>
