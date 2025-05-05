@@ -12,10 +12,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { JSX } from "react";
-import { signIn } from "next-auth/react";
+import { ClientSafeProvider, LiteralUnion, signIn } from "next-auth/react";
+import { BuiltInProviderType } from "next-auth/providers/index";
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
-  providers: Record<string, any> | null;
+  providers: Record<
+    LiteralUnion<BuiltInProviderType, string>,
+    ClientSafeProvider
+  > | null;
 }
 
 export function LoginForm({ className, providers, ...props }: LoginFormProps) {
