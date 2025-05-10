@@ -15,6 +15,7 @@ import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import SignOutButton from "./sign-out-button";
 
 export const Header = () => {
   const { data: session } = useSession();
@@ -144,9 +145,7 @@ export const Header = () => {
           )}
 
           {session ? (
-            <Button variant="outline" onClick={() => signOut()}>
-              Sign out
-            </Button>
+            <SignOutButton />
           ) : (
             <Button variant="outline">
               <Link href="/auth/signin">Sign in</Link>
