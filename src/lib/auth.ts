@@ -29,6 +29,12 @@ export const config = {
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID ?? "",
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET ?? "",
+      authorization: {
+        params: {
+          scope:
+            "user-read-email user-read-private user-read-recently-played user-top-read playlist-read-private playlist-modify-public playlist-modify-private",
+        },
+      },
     }),
   ],
   callbacks: {
