@@ -24,8 +24,8 @@ export const Hero = () => {
             </p>
           </div>
           <div className="flex flex-row gap-3">
-            <Button size="lg" className="gap-4" variant="outline">
-              View Demo
+            <Button size="lg" className="gap-4" variant="outline" asChild>
+              <Link href="/dashboard">View Demo</Link>
             </Button>
             {session ? (
               <Button size="lg" className="gap-4" asChild>
