@@ -29,6 +29,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import demoData from "./demo-data.json";
 
 // Helper function to format milliseconds to mm:ss
 function formatDuration(ms: number) {
@@ -40,46 +43,96 @@ function formatDuration(ms: number) {
 export default async function Dashboard() {
   const session = await auth();
 
-  // if (!session || !session.user) {
-  //   redirect("/auth/signin");
-  // }
+  let user: {
+      country: string;
+      display_name: string;
+      email: string;
+      followers: { total: number };
+      images: { url: string }[];
+    } = {
+      country: "",
+      display_name: "",
+      email: "",
+      followers: { total: 0 },
+      images: [],
+    },
+    topArtists: {
+      items: {
+        id: string;
+        name: string;
+        images: { url: string }[];
+        genres: string[];
+      }[];
+    } = { items: [] },
+    topTracks: {
+      items: {
+        id: string;
+        name: string;
+        album: { name: string; images: { url: string }[] };
+        artists: { name: string }[];
+        duration_ms: number;
+      }[];
+    } = { items: [] },
+    recentlyPlayed: {
+      items: {
+        track: {
+          id: string;
+          name: string;
+          album: { name: string; images: { url: string }[] };
+          artists: { name: string }[];
+          duration_ms: number;
+        };
+        played_at: string;
+      }[];
+    } = { items: [] };
 
-  const topArtistsData = await fetch(
-    "https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=50&offset=0",
-    {
+  if (session && session.user) {
+    const userData = await fetch("https://api.spotify.com/v1/me", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${session?.accessToken}`,
         "Content-Type": "application/json",
       },
-    }
-  );
+    });
+    user = await userData.json();
 
-  const topArtists = await topArtistsData.json();
+    const topArtistsData = await fetch(
+      "https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=50&offset=0",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  const topTracksData = await fetch(
-    "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=50&offset=0",
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.accessToken}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  const topTracks = await topTracksData.json();
+    topArtists = await topArtistsData.json();
 
-  const recentlyPlayedData = await fetch(
-    "https://api.spotify.com/v1/me/player/recently-played?limit=50",
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.accessToken}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  const recentlyPlayed = await recentlyPlayedData.json();
+    const topTracksData = await fetch(
+      "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=50&offset=0",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    topTracks = await topTracksData.json();
+
+    const recentlyPlayedData = await fetch(
+      "https://api.spotify.com/v1/me/player/recently-played?limit=50",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    recentlyPlayed = await recentlyPlayedData.json();
+  }
 
   const topGenres = topArtists.items
     ? topArtists.items
@@ -116,13 +169,11 @@ export default async function Dashboard() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>Summary</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -140,6 +191,145 @@ export default async function Dashboard() {
         </header>
         <div className="flex-1 overflow-auto">
           <div className="flex flex-col gap-6 p-4 w-full max-w-full">
+            {/* Profile Section */}
+            <div className="rounded-xl bg-card p-6 w-full">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* User Info */}
+                <div className="md:col-span-1 bg-muted/20 rounded-lg p-5 flex flex-col items-center text-center h-full">
+                  <Avatar className="w-80 h-80 rounded-xl mb-4">
+                    <AvatarImage
+                      src={user.images?.[0]?.url || "/placeholder.svg"}
+                      alt={user.display_name}
+                    />
+                    <AvatarFallback className="rounded-xl text-4xl">
+                      {user.display_name?.charAt(0).toUpperCase() || "G"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <h2 className="text-2xl font-bold">{user.display_name}</h2>
+                  <p className="text-muted-foreground mt-1">{user.email}</p>
+                  <div className="flex items-center justify-center gap-3 mt-3">
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      {user.followers?.total || 0} followers
+                    </Badge>
+                    <Badge variant="outline">{user.country}</Badge>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                    {/* Top Artists */}
+                    <div className="bg-muted/20 rounded-lg p-4 h-full">
+                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <div className="bg-primary/10 p-1.5 rounded-md"></div>
+                        Top Artists
+                      </h3>
+                      <div className="space-y-3">
+                        {topArtists.items &&
+                          topArtists.items
+                            .slice(0, 5)
+                            .map((artist: any, index: number) => (
+                              <div
+                                key={artist.id}
+                                className="flex items-center gap-3 bg-background/50 rounded-md p-2 hover:bg-background transition-colors"
+                              >
+                                <div className="relative h-10 w-10 overflow-hidden rounded-md flex-shrink-0">
+                                  <img
+                                    src={
+                                      artist.images?.[0]?.url ||
+                                      "/placeholder.svg" ||
+                                      "/placeholder.svg"
+                                    }
+                                    alt={artist.name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
+                                <span className="text-sm font-medium truncate flex-1">
+                                  {artist.name}
+                                </span>
+                                <Badge
+                                  variant="outline"
+                                  className="flex-shrink-0"
+                                >
+                                  #{index + 1}
+                                </Badge>
+                              </div>
+                            ))}
+                      </div>
+                    </div>
+
+                    {/* Top Tracks */}
+                    <div className="bg-muted/20 rounded-lg p-4 h-full">
+                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                        <div className="bg-primary/10 p-1.5 rounded-md"></div>
+                        Top Tracks
+                      </h3>
+                      <div className="space-y-3">
+                        {topTracks.items &&
+                          topTracks.items
+                            .slice(0, 5)
+                            .map((track: any, index: number) => (
+                              <div
+                                key={track.id}
+                                className="flex items-center gap-3 bg-background/50 rounded-md p-2 hover:bg-background transition-colors"
+                              >
+                                <div className="relative h-10 w-10 overflow-hidden rounded-md flex-shrink-0">
+                                  <img
+                                    src={
+                                      track.album?.images?.[0]?.url ||
+                                      "/placeholder.svg" ||
+                                      "/placeholder.svg"
+                                    }
+                                    alt={track.name}
+                                    className="h-full w-full object-cover"
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-sm font-medium truncate block">
+                                    {track.name}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground truncate block">
+                                    {track.artists
+                                      .map((artist: any) => artist.name)
+                                      .join(", ")}
+                                  </span>
+                                </div>
+                                <Badge
+                                  variant="outline"
+                                  className="flex-shrink-0"
+                                >
+                                  #{index + 1}
+                                </Badge>
+                              </div>
+                            ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Top Genres - Below */}
+                  <div className="bg-muted/20 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                      <div className="bg-primary/10 p-1.5 rounded-md"></div>
+                      Top Genres
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {sortedTopGenres.map((item) => (
+                        <Badge
+                          key={item.genre}
+                          variant="secondary"
+                          className="capitalize py-1"
+                        >
+                          {item.genre}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Top Artists Carousel */}
             <div className="rounded-xl bg-card p-6 w-full">
               <h2 className="text-2xl font-bold mb-6">Top Artists</h2>
