@@ -32,6 +32,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import demoData from "./demo-data.json";
+import { NavUser } from "@/components/nav-user";
 
 // Helper function to format milliseconds to mm:ss
 function formatDuration(ms: number) {
@@ -179,288 +180,157 @@ export default async function Dashboard() {
             </Breadcrumb>
           </div>
           <div className="ml-auto flex items-center gap-2 pr-4">
-            {session ? (
-              <SignOutButton />
-            ) : (
-              <Button variant="outline">
-                <Link href="/auth/signin">Sign in</Link>
-              </Button>
-            )}
             <ModeToggle />
           </div>
         </header>
         <div className="flex-1 overflow-auto">
           <div className="flex flex-col gap-6 p-4 w-full max-w-full">
-            {/* Profile Section */}
+            {/* Top Genres */}
             <div className="rounded-xl bg-card p-6 w-full">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* User Info */}
-                <div className="md:col-span-1 bg-muted/20 rounded-lg p-5 flex flex-col items-center text-center h-full">
-                  <Avatar className="w-80 h-80 rounded-xl mb-4">
-                    <AvatarImage
-                      src={user.images?.[0]?.url || "/placeholder.svg"}
-                      alt={user.display_name}
-                    />
-                    <AvatarFallback className="rounded-xl text-4xl">
-                      {user.display_name?.charAt(0).toUpperCase() || "G"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <h2 className="text-2xl font-bold">{user.display_name}</h2>
-                  <p className="text-muted-foreground mt-1">{user.email}</p>
-                  <div className="flex items-center justify-center gap-3 mt-3">
+              <h2 className="text-2xl font-bold mb-6">Top Genres</h2>
+              <div className="flex flex-wrap gap-2">
+                {sortedTopGenres && sortedTopGenres.length > 0 ? (
+                  sortedTopGenres.map((item) => (
                     <Badge
-                      variant="outline"
-                      className="flex items-center gap-1"
+                      key={item.genre}
+                      variant="secondary"
+                      className="capitalize py-1"
                     >
-                      {user.followers?.total || 0} followers
+                      {item.genre}
                     </Badge>
-                    <Badge variant="outline">{user.country}</Badge>
-                  </div>
-                </div>
-
-                <div className="md:col-span-2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                    {/* Top Artists */}
-                    <div className="bg-muted/20 rounded-lg p-4 h-full">
-                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <div className="bg-primary/10 p-1.5 rounded-md"></div>
-                        Top Artists
-                      </h3>
-                      <div className="space-y-3">
-                        {topArtists.items &&
-                          topArtists.items
-                            .slice(0, 5)
-                            .map((artist: any, index: number) => (
-                              <div
-                                key={artist.id}
-                                className="flex items-center gap-3 bg-background/50 rounded-md p-2 hover:bg-background transition-colors"
-                              >
-                                <div className="relative h-10 w-10 overflow-hidden rounded-md flex-shrink-0">
+                  ))
+                ) : (
+                  <span className="text-center w-full p-8">
+                    No top genres found.
+                  </span>
+                )}
+              </div>
+            </div>
+            {/* Top Artists */}
+            <div className="rounded-xl bg-card p-6 w-full">
+              <h2 className="text-2xl font-bold mb-6">Top Artists</h2>
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {topArtists.items && topArtists.items.length > 0 ? (
+                    topArtists.items.map((artist: any, index: number) => (
+                      <CarouselItem
+                        key={artist.id}
+                        className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/6"
+                      >
+                        <Card className="overflow-hidden border-0 shadow-sm">
+                          <CardContent className="p-0">
+                            <div className="flex flex-col">
+                              {artist.images && artist.images[0] && (
+                                <div className="relative aspect-square w-full overflow-hidden">
                                   <img
                                     src={
-                                      artist.images?.[0]?.url ||
+                                      artist.images[0].url ||
                                       "/placeholder.svg" ||
                                       "/placeholder.svg"
                                     }
                                     alt={artist.name}
-                                    className="h-full w-full object-cover"
+                                    className="h-full w-full object-cover transition-transform hover:scale-105"
                                   />
                                 </div>
-                                <span className="text-sm font-medium truncate flex-1">
+                              )}
+                              <div className="p-4">
+                                <span className="block text-base font-semibold truncate">
                                   {artist.name}
                                 </span>
-                                <Badge
-                                  variant="outline"
-                                  className="flex-shrink-0"
-                                >
+                                <span className="text-sm text-muted-foreground">
                                   #{index + 1}
-                                </Badge>
+                                </span>
                               </div>
-                            ))}
-                      </div>
-                    </div>
-
-                    {/* Top Tracks */}
-                    <div className="bg-muted/20 rounded-lg p-4 h-full">
-                      <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <div className="bg-primary/10 p-1.5 rounded-md"></div>
-                        Top Tracks
-                      </h3>
-                      <div className="space-y-3">
-                        {topTracks.items &&
-                          topTracks.items
-                            .slice(0, 5)
-                            .map((track: any, index: number) => (
-                              <div
-                                key={track.id}
-                                className="flex items-center gap-3 bg-background/50 rounded-md p-2 hover:bg-background transition-colors"
-                              >
-                                <div className="relative h-10 w-10 overflow-hidden rounded-md flex-shrink-0">
-                                  <img
-                                    src={
-                                      track.album?.images?.[0]?.url ||
-                                      "/placeholder.svg" ||
-                                      "/placeholder.svg"
-                                    }
-                                    alt={track.name}
-                                    className="h-full w-full object-cover"
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <span className="text-sm font-medium truncate block">
-                                    {track.name}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground truncate block">
-                                    {track.artists
-                                      .map((artist: any) => artist.name)
-                                      .join(", ")}
-                                  </span>
-                                </div>
-                                <Badge
-                                  variant="outline"
-                                  className="flex-shrink-0"
-                                >
-                                  #{index + 1}
-                                </Badge>
-                              </div>
-                            ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Top Genres - Below */}
-                  <div className="bg-muted/20 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                      <div className="bg-primary/10 p-1.5 rounded-md"></div>
-                      Top Genres
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {sortedTopGenres.map((item) => (
-                        <Badge
-                          key={item.genre}
-                          variant="secondary"
-                          className="capitalize py-1"
-                        >
-                          {item.genre}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </CarouselItem>
+                    ))
+                  ) : (
+                    <span className="text-center w-full p-8">
+                      No top artists found.
+                    </span>
+                  )}
+                </CarouselContent>
+                <div className="flex items-center justify-end gap-2 mt-4">
+                  <CarouselPrevious className="static transform-none" />
+                  <CarouselNext className="static transform-none" />
                 </div>
-              </div>
+              </Carousel>
             </div>
-
-            {/* Top Artists Carousel */}
+            {/* Top Tracks */}
             <div className="rounded-xl bg-card p-6 w-full">
-              <h2 className="text-2xl font-bold mb-6">Top Artists</h2>
-              <div className="carousel-container relative w-full">
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                  className="w-full"
-                >
-                  <CarouselContent className="-ml-2 md:-ml-4">
-                    {topArtists.items && topArtists.items.length > 0 ? (
-                      topArtists.items.map((artist: any, index: number) => (
-                        <CarouselItem
-                          key={artist.id}
-                          className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
-                        >
-                          <Card className="overflow-hidden border-0 shadow-sm">
-                            <CardContent className="p-0">
-                              <div className="flex flex-col">
-                                {artist.images && artist.images[0] && (
+              <h2 className="text-2xl font-bold mb-6">Top Tracks</h2>
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {topTracks.items && topTracks.items.length > 0 ? (
+                    topTracks.items.map((track: any, index: number) => (
+                      <CarouselItem
+                        key={track.id}
+                        className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/6"
+                      >
+                        <Card className="overflow-hidden border-0 shadow-sm h-full">
+                          <CardContent className="p-0 h-full">
+                            <div className="flex flex-col h-full">
+                              {track.album &&
+                                track.album.images &&
+                                track.album.images[0] && (
                                   <div className="relative aspect-square w-full overflow-hidden">
                                     <img
                                       src={
-                                        artist.images[0].url ||
+                                        track.album.images[0].url ||
                                         "/placeholder.svg" ||
                                         "/placeholder.svg"
                                       }
-                                      alt={artist.name}
+                                      alt={track.name}
                                       className="h-full w-full object-cover transition-transform hover:scale-105"
                                     />
                                   </div>
                                 )}
-                                <div className="p-4">
-                                  <span className="block text-base font-semibold truncate">
-                                    {artist.name}
-                                  </span>
+                              <div className="p-4 flex flex-col flex-grow">
+                                <span className="block text-base font-semibold truncate">
+                                  {track.name}
+                                </span>
+                                <span className="text-sm text-muted-foreground truncate">
+                                  {track.artists
+                                    .map((artist: any) => artist.name)
+                                    .join(", ")}
+                                </span>
+                                <div className="mt-auto pt-2">
                                   <span className="text-sm text-muted-foreground">
                                     #{index + 1}
                                   </span>
                                 </div>
                               </div>
-                            </CardContent>
-                          </Card>
-                        </CarouselItem>
-                      ))
-                    ) : (
-                      <span className="text-center w-full p-8">
-                        No top artists found.
-                      </span>
-                    )}
-                  </CarouselContent>
-                  <div className="flex items-center justify-end gap-2 mt-4">
-                    <CarouselPrevious className="static transform-none" />
-                    <CarouselNext className="static transform-none" />
-                  </div>
-                </Carousel>
-              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </CarouselItem>
+                    ))
+                  ) : (
+                    <span className="text-center w-full p-8">
+                      No top tracks found.
+                    </span>
+                  )}
+                </CarouselContent>
+                <div className="flex items-center justify-end gap-2 mt-4">
+                  <CarouselPrevious className="static transform-none" />
+                  <CarouselNext className="static transform-none" />
+                </div>
+              </Carousel>
             </div>
-
-            {/* Top Tracks Carousel */}
-            <div className="rounded-xl bg-card p-6 w-full">
-              <h2 className="text-2xl font-bold mb-6">Top Tracks</h2>
-              <div className="carousel-container relative w-full">
-                <Carousel
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                  className="w-full"
-                >
-                  <CarouselContent className="-ml-2 md:-ml-4">
-                    {topTracks.items && topTracks.items.length > 0 ? (
-                      topTracks.items.map((track: any, index: number) => (
-                        <CarouselItem
-                          key={track.id}
-                          className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
-                        >
-                          <Card className="overflow-hidden border-0 shadow-sm h-full">
-                            <CardContent className="p-0 h-full">
-                              <div className="flex flex-col h-full">
-                                {track.album &&
-                                  track.album.images &&
-                                  track.album.images[0] && (
-                                    <div className="relative aspect-square w-full overflow-hidden">
-                                      <img
-                                        src={
-                                          track.album.images[0].url ||
-                                          "/placeholder.svg" ||
-                                          "/placeholder.svg"
-                                        }
-                                        alt={track.name}
-                                        className="h-full w-full object-cover transition-transform hover:scale-105"
-                                      />
-                                    </div>
-                                  )}
-                                <div className="p-4 flex flex-col flex-grow">
-                                  <span className="block text-base font-semibold truncate">
-                                    {track.name}
-                                  </span>
-                                  <span className="text-sm text-muted-foreground truncate">
-                                    {track.artists
-                                      .map((artist: any) => artist.name)
-                                      .join(", ")}
-                                  </span>
-                                  <div className="mt-auto pt-2">
-                                    <span className="text-sm text-muted-foreground">
-                                      #{index + 1}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </CarouselItem>
-                      ))
-                    ) : (
-                      <span className="text-center w-full p-8">
-                        No top tracks found.
-                      </span>
-                    )}
-                  </CarouselContent>
-                  <div className="flex items-center justify-end gap-2 mt-4">
-                    <CarouselPrevious className="static transform-none" />
-                    <CarouselNext className="static transform-none" />
-                  </div>
-                </Carousel>
-              </div>
-            </div>
-
             {/* Recently Played and Top Genres Side by Side */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Recently Played Section */}
@@ -556,53 +426,6 @@ export default async function Dashboard() {
                   ) : (
                     <div className="text-center w-full p-4">
                       No recently played tracks found.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Top Genres Section */}
-              <div className="rounded-xl bg-card p-6 w-full h-full">
-                <h2 className="text-2xl font-bold mb-4">Top Genres</h2>
-                <div className="w-full overflow-hidden rounded-md border h-[calc(100%-3rem)]">
-                  {sortedTopGenres && sortedTopGenres.length > 0 ? (
-                    <div className="p-4 overflow-auto h-full">
-                      <div className="grid grid-cols-1 gap-3">
-                        {sortedTopGenres
-                          .slice(0, 10)
-                          .map((item: any, index) => (
-                            <div
-                              key={item.genre}
-                              className="flex items-center justify-between bg-muted/50 rounded-md p-3 hover:bg-muted transition-colors"
-                            >
-                              <span className="text-sm font-medium capitalize">
-                                {item.genre}
-                              </span>
-                              <div className="flex items-center gap-2">
-                                <div className="w-24 bg-muted rounded-full h-2 overflow-hidden">
-                                  <div
-                                    className="bg-primary h-full"
-                                    style={{
-                                      width: `${Math.min(
-                                        100,
-                                        (item.count /
-                                          sortedTopGenres[0].count) *
-                                          100
-                                      )}%`,
-                                    }}
-                                  ></div>
-                                </div>
-                                <span className="text-xs text-muted-foreground">
-                                  {item.count}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center w-full p-4">
-                      No top genres found.
                     </div>
                   )}
                 </div>

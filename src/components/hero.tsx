@@ -17,7 +17,7 @@ export const Hero = () => {
               <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 Visualize{" "}
               </span>
-              Your Musics
+              Your Music
             </h1>
             <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
               Generate insights about your top artists, tracks, and genres.

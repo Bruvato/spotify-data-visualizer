@@ -10,8 +10,10 @@ import {
   Map,
   PieChart,
   Send,
+  Settings,
   Settings2,
   SquareTerminal,
+  User,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -29,33 +31,39 @@ import {
 } from "@/components/ui/sidebar";
 
 import Link from "next/link";
+import Logo from "./logo";
 
 const data = {
   navMain: [
     {
-      title: "Playground",
+      title: "Profile",
       url: "#",
-      icon: SquareTerminal,
+      icon: User,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "Top Genres",
           url: "#",
         },
         {
-          title: "Starred",
+          title: "Top Artists",
           url: "#",
         },
         {
-          title: "Settings",
+          title: "Top Tracks",
+          url: "#",
+        },
+        {
+          title: "Recently Played",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Playground",
       url: "#",
-      icon: Bot,
+      icon: Command,
+      isActive: true,
       items: [
         {
           title: "Genesis",
@@ -72,32 +80,10 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
       title: "Settings",
       url: "#",
-      icon: Settings2,
+      icon: Settings,
+      isActive: true,
       items: [
         {
           title: "General",
@@ -130,23 +116,6 @@ const data = {
       icon: Send,
     },
   ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
 };
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -164,23 +133,13 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    Spotify Data Visualizer
-                  </span>
-                </div>
-              </Link>
+              <Logo />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
