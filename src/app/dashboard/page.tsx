@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth";
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 import Link from "next/link";
 
@@ -15,6 +14,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import demoData from "./demo-data.json";
 
+import {
+  fetchTopArtists,
+  fetchTopTracks,
+  fetchRecentlyPlayed,
+  createSpotifyClient,
+  fetchUserProfile,
+} from "@/lib/spotify-service";
+
 // Helper function to format milliseconds to mm:ss
 function formatDuration(ms: number) {
   const minutes = Math.floor(ms / 60000);
@@ -25,99 +32,19 @@ function formatDuration(ms: number) {
 export default async function Dashboard() {
   const session = await auth();
 
-  let user: {
-      country: string;
-      display_name: string;
-      email: string;
-      followers: { total: number };
-      images: { url: string }[];
-    } = {
-      country: "",
-      display_name: "",
-      email: "",
-      followers: { total: 0 },
-      images: [],
-    },
-    topArtists: {
-      items: {
-        id: string;
-        name: string;
-        images: { url: string }[];
-        genres: string[];
-      }[];
-    } = { items: [] },
-    topTracks: {
-      items: {
-        id: string;
-        name: string;
-        album: { name: string; images: { url: string }[] };
-        artists: { name: string }[];
-        duration_ms: number;
-      }[];
-    } = { items: [] },
-    recentlyPlayed: {
-      items: {
-        track: {
-          id: string;
-          name: string;
-          album: { name: string; images: { url: string }[] };
-          artists: { name: string }[];
-          duration_ms: number;
-        };
-        played_at: string;
-      }[];
-    } = { items: [] };
+  const spotifyApi = createSpotifyClient(
+    session?.accessToken ?? "",
+    session?.refreshToken ?? "",
+    session?.accessTokenExpires ?? 0
+  );
 
-  if (session && session.user) {
-    const userData = await fetch("https://api.spotify.com/v1/me", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-    user = await userData.json();
+  const user = await fetchUserProfile(spotifyApi);
+  const topArtists = await fetchTopArtists(spotifyApi);
+  const topTracks = await fetchTopTracks(spotifyApi);
+  const recentlyPlayed = await fetchRecentlyPlayed(spotifyApi);
 
-    const topArtistsData = await fetch(
-      "https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=50&offset=0",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    topArtists = await topArtistsData.json();
-
-    const topTracksData = await fetch(
-      "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=50&offset=0",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    topTracks = await topTracksData.json();
-
-    const recentlyPlayedData = await fetch(
-      "https://api.spotify.com/v1/me/player/recently-played?limit=50",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    recentlyPlayed = await recentlyPlayedData.json();
-  }
-
-  const topGenres = topArtists.items
-    ? topArtists.items
+  const topGenres = topArtists
+    ? topArtists
         .flatMap((artist: any) => artist.genres)
         .reduce((acc: Record<string, number>, genre: string) => {
           acc[genre] = (acc[genre] || 0) + 1;
@@ -166,8 +93,8 @@ export default async function Dashboard() {
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
-              {topArtists.items && topArtists.items.length > 0 ? (
-                topArtists.items.map((artist: any, index: number) => (
+              {topArtists && topArtists.length > 0 ? (
+                topArtists.map((artist: any, index: number) => (
                   <CarouselItem
                     key={artist.id}
                     className="py-2 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/6"
@@ -220,8 +147,8 @@ export default async function Dashboard() {
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
-              {topTracks.items && topTracks.items.length > 0 ? (
-                topTracks.items.map((track: any, index: number) => (
+              {topTracks && topTracks.length > 0 ? (
+                topTracks.map((track: any, index: number) => (
                   <CarouselItem
                     key={track.id}
                     className="py-2 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/6"
@@ -271,101 +198,57 @@ export default async function Dashboard() {
           </Carousel>
         </div>
         {/* Recently Played Section */}
-        <div
-          id="recently-played"
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          <div className="rounded-xl bg-card p-6 w-full h-full">
-            <h2 className="text-2xl font-bold mb-4">Recently Played</h2>
-            <div className="w-full overflow-hidden rounded-md border h-[calc(100%-3rem)]">
-              {recentlyPlayed.items && recentlyPlayed.items.length > 0 ? (
-                <div className="overflow-auto h-full">
-                  <table className="w-full">
-                    <thead className="bg-muted/50 sticky top-0">
-                      <tr className="text-xs font-medium text-muted-foreground">
-                        <th className="p-2 text-left w-10"></th>
-                        <th className="p-2 text-left">Song</th>
-                        <th className="p-2 text-left hidden md:table-cell">
-                          Artist
-                        </th>
-                        <th className="p-2 text-left hidden lg:table-cell">
-                          Album
-                        </th>
-                        <th className="p-2 text-right hidden sm:table-cell">
-                          Duration
-                        </th>
-                        <th className="p-2 text-right">Played</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {recentlyPlayed.items.slice(0, 10).map((item: any) => (
-                        <tr
-                          key={item.played_at}
-                          className="hover:bg-muted/50 transition-colors"
-                        >
-                          <td className="p-2">
-                            {item.track.album &&
-                              item.track.album.images &&
-                              item.track.album.images[2] && (
-                                <div className="relative h-10 w-10 overflow-hidden rounded-sm">
-                                  <img
-                                    src={
-                                      item.track.album.images[2].url ||
-                                      "/placeholder.svg" ||
-                                      "/placeholder.svg"
-                                    }
-                                    alt={item.track.name}
-                                    className="h-full w-full object-cover"
-                                  />
-                                </div>
-                              )}
-                          </td>
-                          <td className="p-2">
-                            <span className="block text-sm font-medium truncate">
-                              {item.track.name}
-                            </span>
-                            <span className="block text-xs text-muted-foreground md:hidden truncate">
-                              {item.track.artists
-                                .map((artist: any) => artist.name)
-                                .join(", ")}
-                            </span>
-                          </td>
-                          <td className="p-2 hidden md:table-cell">
-                            <span className="text-sm truncate block max-w-[150px]">
-                              {item.track.artists
-                                .map((artist: any) => artist.name)
-                                .join(", ")}
-                            </span>
-                          </td>
-                          <td className="p-2 hidden lg:table-cell">
-                            <span className="text-sm truncate block max-w-[150px]">
-                              {item.track.album.name}
-                            </span>
-                          </td>
-                          <td className="p-2 text-right hidden sm:table-cell">
-                            <span className="text-xs text-muted-foreground">
-                              {formatDuration(item.track.duration_ms)}
-                            </span>
-                          </td>
-                          <td className="p-2 text-right">
-                            <span className="text-xs text-muted-foreground whitespace-nowrap">
-                              {new Date(item.played_at).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-center w-full p-4">
-                  No recently played tracks found.
-                </div>
-              )}
-            </div>
+        <div id="recently-played" className="rounded-xl bg-card p-6 w-full">
+          <h2 className="text-2xl font-bold mb-4">Recently Played</h2>
+          <div className="w-full overflow-hidden rounded-md border h-full border-none">
+            {recentlyPlayed && recentlyPlayed.length > 0 ? (
+              <div className="flex flex-col gap-4 overflow-auto h-full">
+                {recentlyPlayed.slice(0, 50).map((item: any) => (
+                  <div
+                    key={item.played_at}
+                    className="flex items-center gap-4 p-4 rounded-md hover:bg-muted/50 transition-colors"
+                  >
+                    {/* Album Image */}
+                    {item.track.album && item.track.album.images && (
+                      <div className="relative h-16 w-16 overflow-hidden rounded-sm">
+                        <img
+                          src={
+                            item.track.album.images[0].url || "/placeholder.svg"
+                          }
+                          alt={item.track.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    )}
+                    {/* Track Info */}
+                    <div className="flex-1">
+                      <span className="block text-sm font-medium truncate">
+                        {item.track.name}
+                      </span>
+                      <span className="block text-xs text-muted-foreground truncate">
+                        {item.track.artists
+                          .map((artist: any) => artist.name)
+                          .join(", ")}
+                      </span>
+                      <span className="block text-xs text-muted-foreground truncate">
+                        {item.track.album.name}
+                      </span>
+                    </div>
+                    {/* Played Time */}
+                    <div className="text-xs text-muted-foreground whitespace-nowrap">
+                      {new Date(item.played_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center w-full p-4">
+                No recently played tracks found.
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -11,6 +11,8 @@ import SpotifyProvider from "next-auth/providers/spotify";
 
 import axios from "axios";
 
+// import authOptions from "@/app/api/auth/[...nextauth]/auth-options";
+
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const SPOTIFY_REFRESH_TOKEN_URL = "https://accounts.spotify.com/api/token";
@@ -39,7 +41,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       ...token,
       accessToken: data.access_token,
       accessTokenExpires: Date.now() + data.expires_in * 1000,
-      // refreshToken: data.refresh_token ?? token.refreshToken, // Use new refresh token if provided
+      refreshToken: data.refresh_token ?? token.refreshToken, // Use new refresh token if provided
     };
   } catch (error) {
     console.error("Error refreshing access token", error);
@@ -89,9 +91,13 @@ export const config = {
     },
 
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
-      session.error = token.error;
-      session.user = token.user;
+      if (token) {
+        session.accessToken = token.accessToken;
+        session.refreshToken = token.refreshToken;
+        session.accessTokenExpires = token.accessTokenExpires;
+        session.error = token.error;
+        session.user = token.user;
+      }
 
       return session;
     },

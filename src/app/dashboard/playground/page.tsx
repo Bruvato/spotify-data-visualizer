@@ -10,16 +10,16 @@ async function example() {
     const result = await spotifyPreviewFinder("yoru", 3);
 
     if (result.success) {
-      result.results.forEach((song) => {
+      result.results.forEach((song: any) => {
         console.log(`\nSong: ${song.name}`);
         console.log(`Spotify URL: ${song.spotifyUrl}`);
         console.log("Preview URLs:");
-        song.previewUrls.forEach((url) => console.log(`- ${url}`));
+        song.previewUrls.forEach((url: string) => console.log(`- ${url}`));
       });
     } else {
       console.error("Error:", result.error);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error:", error.message);
   }
 }

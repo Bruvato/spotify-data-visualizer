@@ -30,6 +30,8 @@
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "@tabler/icons-react": "^3.33.0",
     "@tanstack/react-table": "^8.21.3",
+    "@types/spotify-api": "^0.0.25",
+    "@types/spotify-web-api-node": "^5.0.11",
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -44,6 +46,7 @@
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
     "spotify-preview-finder": "^1.1.1",
+    "spotify-web-api-node": "^5.0.2",
     "tailwind-merge": "^3.2.0",
     "vaul": "^1.1.2",
     "zod": "^3.24.4"
