@@ -37,45 +37,37 @@ const data = {
   navMain: [
     {
       title: "Profile",
-      url: "#",
+      url: "/dashboard",
       icon: User,
       isActive: true,
       items: [
         {
           title: "Top Genres",
-          url: "#",
+          url: "/dashboard/#top-genres",
         },
         {
           title: "Top Artists",
-          url: "#",
+          url: "/dashboard/#top-artists",
         },
         {
           title: "Top Tracks",
-          url: "#",
+          url: "/dashboard/#top-tracks",
         },
         {
           title: "Recently Played",
-          url: "#",
+          url: "/dashboard/#recently-played",
         },
       ],
     },
     {
       title: "Playground",
-      url: "#",
+      url: "/dashboard/playground",
       icon: Command,
       isActive: true,
       items: [
         {
-          title: "Genesis",
-          url: "#",
-        },
-        {
           title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
+          url: "/dashboard/playground/#",
         },
       ],
     },
