@@ -12,36 +12,67 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import demoData from "./demo-data.json";
 
 import {
   fetchTopArtists,
   fetchTopTracks,
   fetchRecentlyPlayed,
-  createSpotifyClient,
+  createSpotifyClientWithAccessToken,
   fetchUserProfile,
 } from "@/lib/spotify-service";
-
-// Helper function to format milliseconds to mm:ss
-function formatDuration(ms: number) {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = Math.floor((ms % 60000) / 1000);
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
+import {
+  Artist,
+  PlayHistory,
+  Track,
+  UserProfile,
+} from "@spotify/web-api-ts-sdk";
 
 export default async function Dashboard() {
   const session = await auth();
 
-  const spotifyApi = createSpotifyClient(
-    session?.accessToken ?? "",
-    session?.refreshToken ?? "",
-    session?.accessTokenExpires ?? 0
-  );
+  let user: UserProfile;
+  let topArtists: Artist[];
+  let topTracks: Track[];
+  let recentlyPlayed: PlayHistory[];
 
-  const user = await fetchUserProfile(spotifyApi);
-  const topArtists = await fetchTopArtists(spotifyApi);
-  const topTracks = await fetchTopTracks(spotifyApi);
-  const recentlyPlayed = await fetchRecentlyPlayed(spotifyApi);
+  if (session && session.user) {
+    const spotifyApiWithAccessToken = createSpotifyClientWithAccessToken(
+      session?.accessToken ?? "",
+      session?.refreshToken ?? "",
+      session?.accessTokenExpires ?? 0
+    );
+
+    user = await fetchUserProfile(spotifyApiWithAccessToken);
+    topArtists = await fetchTopArtists(spotifyApiWithAccessToken);
+    topTracks = await fetchTopTracks(spotifyApiWithAccessToken);
+    recentlyPlayed = await fetchRecentlyPlayed(spotifyApiWithAccessToken);
+  } else {
+    user = {
+      display_name: "Guest",
+      email: "guest@example.com",
+      country: "US",
+      explicit_content: {
+        filter_enabled: false,
+        filter_locked: false,
+      },
+      external_urls: {
+        spotify: "",
+      },
+      followers: {
+        href: null,
+        total: 0,
+      },
+      href: "",
+      id: "guest",
+      images: [],
+      product: "free",
+      type: "user",
+      uri: "",
+    };
+    topArtists = [];
+    topTracks = [];
+    recentlyPlayed = [];
+  }
 
   const topGenres = topArtists
     ? topArtists
@@ -167,7 +198,7 @@ export default async function Dashboard() {
                                 />
                               </div>
                             )}
-                          <div className="p-4">
+                          <div className="p-4 flex flex-col">
                             <span className="block text-base font-semibold truncate">
                               {track.name}
                             </span>
@@ -206,7 +237,7 @@ export default async function Dashboard() {
                 {recentlyPlayed.slice(0, 50).map((item: any) => (
                   <div
                     key={item.played_at}
-                    className="flex items-center gap-4 p-4 rounded-md hover:bg-muted/50 transition-colors"
+                    className="flex items-center gap-4 p-4 rounded-md hover:bg-muted/50 transition-colors shadow-sm"
                   >
                     {/* Album Image */}
                     {item.track.album && item.track.album.images && (

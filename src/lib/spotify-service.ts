@@ -1,7 +1,8 @@
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 import withNextAuthStrategy from "@/lib/client-instance";
 
-export const createSpotifyClient = (
+
+export const createSpotifyClientWithAccessToken = (
   accessToken: string,
   refreshToken: string,
   accessTokenExpires: number
